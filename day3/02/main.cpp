@@ -6,52 +6,58 @@
 /*   By: katherine <katherine@student.codam.nl>       +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/12/03 13:40:48 by katherine     #+#    #+#                 */
-/*   Updated: 2021/12/03 14:55:51 by katherine     ########   odam.nl         */
+/*   Updated: 2021/12/03 17:36:15 by kfu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "main.hpp"
 
+void	close_and_open(std::fstream *File, std::string FileName)
+{
+	File->close();
+	File->open(FileName, ios::in | ios::out);
+}
+
 int		main(void)
 {
-	std::ifstream	MyFile;
-	std::string		FileName = "input";
+	std::fstream	MyFile;
+	std::string		FileName = "test";
 	std::string		Line;
-	std::string		GammaRate;
+	char			GammaRate;
 	std::string		EpsilonRate;
-	int				FileSize = 1001;
+	int				FileLines = 5;
 	int				Ones = 0;
 	int				Number = 0;
 	int				i;
 
 	i = 0;
-	MyFile.open(FileName, std::ifstream::in);
-	while (MyFile.is_open() && i < 12)
+	MyFile.open(FileName, ios::in | ios::out);
+	while(MyFile.is_open() && FileLines > 1)
 	{
-		Ones = 0;
-		while(getline(MyFile, Line, '\n'))
+		while (i < 12)
 		{
-			Number = Line[i] - 48;
-			if (Number == 1)
-				Ones++;
+			Ones = 0;
+			while(getline(MyFile, Line, '\n'))
+			{
+				Number = Line[i] - 48;
+				if (Number == 1)
+					Ones++;
+			}
+			if (Ones > (FileLines / 2))
+				GammaRate = '1';
+			else
+				GammaRate = '0';
+			close_and_open(&MyFile, FileName);
+			while (getline(MyFile, Line, '\n'))
+			{
+				std::cout << Line << std::endl;
+				if (Line[i] != GammaRate)
+					std::cout << "DELETTEEEE" << std::endl;
+			}
+			close_and_open(&MyFile, FileName);
+			i++;
 		}
-		if (Ones > (FileSize / 2))
-			GammaRate.append("1");
-		else
-			GammaRate.append("0");
-		MyFile.close();
-		MyFile.open(FileName, std::ifstream::in);
-		i++;
+		FileLines = 0;
 	}
-	EpsilonRate = GammaRate;
-	for (i = 0; i < 12; i++)
-	{
-		if (GammaRate[i] == '1')
-			EpsilonRate[i] = '0';
-		else
-			EpsilonRate[i] = '1';
-	}
-	std::cout << "Gamma Rate: " << GammaRate << std::endl;
-	std::cout << "Epsilon Rate: " << EpsilonRate << std::endl;
 	return (0);
 }
